@@ -1,0 +1,31 @@
+name: Test de vote Root-Top (Tulipe)
+
+on:
+  workflow_dispatch:
+  # Programmation désactivée tant que les tests ne sont pas validés
+  # et que les règles de Root-Top n'ont pas été vérifiées.
+  # schedule:
+  #   - cron: '17 */3 * * *'
+
+jobs:
+  tester-votes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Installer Playwright
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Tester les quatre topsites
+        run: python vote.py
+      - name: Sauvegarder les captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: captures-root-top
+          path: captures/*.png
+          if-no-files-found: ignore
